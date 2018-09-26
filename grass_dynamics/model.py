@@ -9,6 +9,7 @@ Replication of the model found in NetLogo:
     Northwestern University, Evanston, IL.
 '''
 
+import random
 
 from mesa import Model
 from mesa.space import MultiGrid
@@ -59,8 +60,9 @@ class GrassDynamicsModel(Model):
 
         # Create grass patches
         for agent, x, y in self.grid.coord_iter():
+            grown = random.choice([True, False])
 
-            patch = GrassPatch(self.next_id(), (x, y), self)
+            patch = GrassPatch(self.next_id(), (x, y), self, 1, grown)
             self.grid.place_agent(patch, (x, y))
             self.schedule.add(patch)
 

@@ -5,7 +5,6 @@ from mesa.visualization.UserParam import UserSettableParameter
 from grass_dynamics.agents import GrassPatch
 from grass_dynamics.model import GrassDynamicsModel
 
-
 def grass_portrayal(agent):
     if agent is None:
         return
@@ -16,7 +15,7 @@ def grass_portrayal(agent):
         if agent.grown:
             portrayal["Color"] = ["#009900"]
         else:
-            portrayal["Color"] = ["#84e184", "#adebad", "#d6f5d6"]
+            portrayal["Color"] = ["#7a510e"]
         portrayal["Shape"] = "rect"
         portrayal["Filled"] = "true"
         portrayal["Layer"] = 0
