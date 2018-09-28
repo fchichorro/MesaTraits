@@ -9,11 +9,11 @@ Replication of the model found in NetLogo:
     Northwestern University, Evanston, IL.
 '''
 
-import random
-
 from mesa import Model
 from mesa.space import MultiGrid
 from mesa.time import RandomActivation
+
+import random
 
 from grass_dynamics.agents import GrassPatch
 
@@ -25,24 +25,15 @@ class GrassDynamicsModel(Model):
 
     height = 20
     width = 20
-
-    initial_sheep = 100
-    initial_wolves = 50
-
-    sheep_reproduce = 0.04
-    wolf_reproduce = 0.05
-
-    wolf_gain_from_food = 20
-
-    grass = True
-    grass_regrowth_time = 30
-    sheep_gain_from_food = 4
-
+    
+    no_of_species = 2
+    no_of_seeds = 1
+    
     verbose = False  # Print-monitoring
 
     description = 'A model for creating grass expansion out of a few patches.'
 
-    def __init__(self, height=100, width=100):
+    def __init__(self, height=50, width=50, no_of_species = 2, no_of_seeds = 1):
         '''
         Create a new Grass dynamics model.
 
@@ -57,15 +48,32 @@ class GrassDynamicsModel(Model):
         self.schedule = RandomActivation(self)
         self.grid = MultiGrid(self.height, self.width, torus=True)
         self.datacollector = None
+        self.no_of_species = no_of_species
+        self.no_of_seeds = no_of_seeds
 
         # Create grass patches
         for agent, x, y in self.grid.coord_iter():
-            grown = random.choice([True, False])
+            #print("new patch added")
+            grown = False
 
-            patch = GrassPatch(self.next_id(), (x, y), self, 1, grown)
+            patch = GrassPatch(self.next_id(), (x, y), self, None, grown)
             self.grid.place_agent(patch, (x, y))
             self.schedule.add(patch)
 
+        #select some random patches (without substitution)
+        total_seeds = no_of_species * no_of_seeds
+        x_cords = random.sample(range(self.width), total_seeds)        
+        y_cords = random.sample(range(self.height), total_seeds)
+        
+        #choose agents at those patches to be assigned the species
+        _ = 0
+        for i in range(no_of_species):
+            for j in range(no_of_seeds):
+                grass = self.grid.get_cell_list_contents((x_cords[_], y_cords[_]))
+                grass[0].grown = True
+                grass[0].species = i
+                _ += 1
+        
         self.running = True
 
     def step(self):

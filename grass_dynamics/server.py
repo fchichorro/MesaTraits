@@ -13,7 +13,10 @@ def grass_portrayal(agent):
 
     if type(agent) is GrassPatch:
         if agent.grown:
-            portrayal["Color"] = ["#009900"]
+            if agent.species == 0:
+                portrayal["Color"] = ["#009900"]
+            else:
+                portrayal["Color"] = ["#000099"]
         else:
             portrayal["Color"] = ["#7a510e"]
         portrayal["Shape"] = "rect"
@@ -22,10 +25,10 @@ def grass_portrayal(agent):
         portrayal["w"] = 1
         portrayal["h"] = 1
 
-    return portrayal
+    return portrayal 
 
 
-canvas_element = CanvasGrid(grass_portrayal, 100, 100, 800, 800)
+canvas_element = CanvasGrid(grass_portrayal, 50, 50, 800, 800)
 
 
 
