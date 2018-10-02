@@ -7,9 +7,7 @@ class GrassPatch(Agent):
     '''
     A patch of grass
     '''
-    no_of_species = 2
-    no_of_seeds = 1
-
+    max_no_of_species = 4
     def __init__(self, unique_id, pos, model, species = None, grown = False):
         '''
         Creates a new patch of grass
@@ -57,13 +55,13 @@ class GrassPatch(Agent):
         become a species based on the species around
         """
         neighbors = self.model.grid.get_neighbors(self.pos, True)
-        species_count = self._count_neighbors_by_species(neighbors, GrassPatch.no_of_species)
+        species_count = self._count_neighbors_by_species(neighbors, GrassPatch.max_no_of_species)
         
         if self._is_any_neighbor_grown(species_count):        
             total = sum(species_count)
             weighted_species_around = [i / total for i in species_count]    
             self.species = int(choice(
-                    range(GrassPatch.no_of_species), p=weighted_species_around))
+                    range(GrassPatch.max_no_of_species), p=weighted_species_around))
             self.grown = True
             #print("I just became grass")
 

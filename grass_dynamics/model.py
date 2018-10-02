@@ -26,14 +26,14 @@ class GrassDynamicsModel(Model):
     height = 20
     width = 20
     
-    no_of_species = 2
+    no_of_species = 4
     no_of_seeds = 1
     
     verbose = False  # Print-monitoring
 
     description = 'A model for creating grass expansion out of a few patches.'
 
-    def __init__(self, height=50, width=50, no_of_species = 2, no_of_seeds = 500):
+    def __init__(self, height = 50, width = 50, no_of_species = 4, no_of_seeds = 2):
         '''
         Create a new Grass dynamics model.
 

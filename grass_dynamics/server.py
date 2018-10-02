@@ -15,8 +15,12 @@ def grass_portrayal(agent):
         if agent.grown:
             if agent.species == 0:
                 portrayal["Color"] = ["#009900"]
-            else:
+            elif agent.species == 1:
                 portrayal["Color"] = ["#000099"]
+            elif agent.species == 2:
+                portrayal["Color"] = ["#990000"]
+            elif agent.species == 3:
+                portrayal["Color"] = ["#999900"]
         else:
             portrayal["Color"] = ["#7a510e"]
         portrayal["Shape"] = "rect"
@@ -30,10 +34,11 @@ def grass_portrayal(agent):
 
 canvas_element = CanvasGrid(grass_portrayal, 50, 50, 800, 800)
 
+#seeds_slider = UserSettableParameter('slider', "Percentage of patches occupied", )
 
 
-model_params = {}
-
+model_params = {"no_of_species" : UserSettableParameter('slider', "Number of grass species", 2,1,4),
+                "no_of_seeds" : UserSettableParameter('slider', "Number of seeds", 3,1,1000)}                                     
 
 server = ModularServer(GrassDynamicsModel, [canvas_element], "Grass dynamics model", model_params)
 server.port = 8521
