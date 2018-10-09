@@ -64,11 +64,22 @@ class GrassPatch(Agent):
                     range(GrassPatch.max_no_of_species), p=weighted_species_around))
             self.grown = True
             #print("I just became grass")
-
-    def step(self):
+            
+    def become_grass(self):
+        """
+        public method to become grass to be called by the grass manager
+        """
         if not self.grown:
             self._become_grass()
-        
-        
-        
-    
+            
+    def is_grown(self):
+        """
+        public method to respect encapsulation. returns whether grass is already
+        grown or not
+        """
+        return self.grown
+
+
+
+    def step(self):
+        pass

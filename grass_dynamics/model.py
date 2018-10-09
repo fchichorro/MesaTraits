@@ -16,7 +16,7 @@ from mesa.time import RandomActivation
 import random
 
 from grass_dynamics.agents import GrassPatch
-
+from grass_dynamics.grass_manager import GrassManager
 
 class GrassDynamicsModel(Model):
     '''
@@ -33,7 +33,7 @@ class GrassDynamicsModel(Model):
 
     description = 'A model for creating grass expansion out of a few patches.'
 
-    def __init__(self, height = 50, width = 50, no_of_species = 4, no_of_seeds = 2):
+    def __init__(self, height = 60, width = 60, no_of_species = 4, no_of_seeds = 2):
         '''
         Create a new Grass dynamics model.
 
@@ -50,6 +50,8 @@ class GrassDynamicsModel(Model):
         self.datacollector = None
         self.no_of_species = no_of_species
         self.no_of_seeds = no_of_seeds
+        self.grass_manager = GrassManager()
+
 
         # Create grass patches
         for agent, x, y in self.grid.coord_iter():
@@ -59,6 +61,7 @@ class GrassDynamicsModel(Model):
             patch = GrassPatch(self.next_id(), (x, y), self, None, grown)
             self.grid.place_agent(patch, (x, y))
             self.schedule.add(patch)
+            self.grass_manager.add_grass(patch)
         
         list_of_cells = []
         #select some random patches (without substitution)
@@ -76,7 +79,11 @@ class GrassDynamicsModel(Model):
                 grass = self.grid.get_cell_list_contents(cords[_])
                 grass[0].grown = True
                 grass[0].species = i
+                self.grass_manager.remove_grass(grass[0])
                 _ += 1
+        
+        #make the grass grow
+        self.grass_manager.grow_grasses()
         
         self.running = True
 

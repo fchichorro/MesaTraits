@@ -32,7 +32,7 @@ def grass_portrayal(agent):
     return portrayal 
 
 
-canvas_element = CanvasGrid(grass_portrayal, 50, 50, 800, 800)
+canvas_element = CanvasGrid(grass_portrayal, 60, 60, 800, 800)
 
 #seeds_slider = UserSettableParameter('slider', "Percentage of patches occupied", )
 
