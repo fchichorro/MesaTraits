@@ -2,16 +2,16 @@ from mesa.visualization.ModularVisualization import ModularServer
 from mesa.visualization.modules import CanvasGrid, ChartModule
 from mesa.visualization.UserParam import UserSettableParameter
 
-from grass_dynamics.agents import GrassPatch
-from grass_dynamics.model import GrassDynamicsModel
+from mesatraits.agents import Patch
+from mesatraits.model import MesaTraitsModel
 
-def grass_portrayal(agent):
+def mesatraits_portrayal(agent):
     if agent is None:
         return
 
     portrayal = {}
 
-    if type(agent) is GrassPatch:
+    if type(agent) is Patch:
         if agent.grown:
             if agent.species == 0:
                 portrayal["Color"] = ["#009900"]
@@ -32,13 +32,13 @@ def grass_portrayal(agent):
     return portrayal 
 
 
-canvas_element = CanvasGrid(grass_portrayal, 60, 60, 800, 800)
+canvas_element = CanvasGrid(mesatraits_portrayal, 60, 60, 800, 800)
 
 #seeds_slider = UserSettableParameter('slider', "Percentage of patches occupied", )
 
 
-model_params = {"no_of_species" : UserSettableParameter('slider', "Number of grass species", 2,1,4),
+model_params = {"no_of_species" : UserSettableParameter('slider', "Number of patch types", 2,1,4),
                 "no_of_seeds" : UserSettableParameter('slider', "Number of seeds", 3,1,1000)}                                     
 
-server = ModularServer(GrassDynamicsModel, [canvas_element], "Grass dynamics model", model_params)
+server = ModularServer(MesaTraitsModel, [canvas_element], "MesaTraits", model_params)
 server.port = 8521

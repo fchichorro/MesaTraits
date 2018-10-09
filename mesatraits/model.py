@@ -1,5 +1,5 @@
 '''
-Grass Dynamics model
+MesaTraits model
 ================================
 
 This model shows how two patches of grass grow depending on the way they are 
@@ -15,12 +15,12 @@ from mesa.time import RandomActivation
 
 import random
 
-from grass_dynamics.agents import GrassPatch
-from grass_dynamics.grass_manager import GrassManager
+from mesatraits.agents import Patch
+from mesatraits.patch_manager import PatchManager
 
-class GrassDynamicsModel(Model):
+class MesaTraitsModel(Model):
     '''
-    Growing grass patches Model
+    TODO: add new description here
     '''
 
     height = 20
@@ -31,11 +31,11 @@ class GrassDynamicsModel(Model):
     
     verbose = False  # Print-monitoring
 
-    description = 'A model for creating grass expansion out of a few patches.'
+    description = 'A model for creating patch expansion out of a few patches.'
 
     def __init__(self, height = 60, width = 60, no_of_species = 4, no_of_seeds = 2):
         '''
-        Create a new Grass dynamics model.
+        Create a new MesaTraitsModel.
 
         Args:
 
@@ -50,18 +50,18 @@ class GrassDynamicsModel(Model):
         self.datacollector = None
         self.no_of_species = no_of_species
         self.no_of_seeds = no_of_seeds
-        self.grass_manager = GrassManager()
+        self.patch_manager = PatchManager()
 
 
-        # Create grass patches
+        # Create patches
         for agent, x, y in self.grid.coord_iter():
             #print("new patch added")
             grown = False
 
-            patch = GrassPatch(self.next_id(), (x, y), self, None, grown)
+            patch = Patch(self.next_id(), (x, y), self, None, grown)
             self.grid.place_agent(patch, (x, y))
             self.schedule.add(patch)
-            self.grass_manager.add_grass(patch)
+            self.patch_manager.add_patch(patch)
         
         list_of_cells = []
         #select some random patches (without substitution)
@@ -76,14 +76,14 @@ class GrassDynamicsModel(Model):
         _ = 0
         for i in range(no_of_species):
             for j in range(no_of_seeds):
-                grass = self.grid.get_cell_list_contents(cords[_])
-                grass[0].grown = True
-                grass[0].species = i
-                self.grass_manager.remove_grass(grass[0])
+                patch = self.grid.get_cell_list_contents(cords[_])
+                patch[0].grown = True
+                patch[0].species = i
+                self.patch_manager.remove_patch(patch[0])
                 _ += 1
         
-        #make the grass grow
-        self.grass_manager.grow_grasses()
+        #make the patch grow
+        self.patch_manager.grow_patches()
         
         self.running = True
 

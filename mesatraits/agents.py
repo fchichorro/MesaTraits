@@ -3,14 +3,14 @@ from numpy.random import choice
 
 import random
 
-class GrassPatch(Agent):
+class Patch(Agent):
     '''
-    A patch of grass
+    A patch of habitat/resource/whatever
     '''
     max_no_of_species = 4
     def __init__(self, unique_id, pos, model, species = None, grown = False):
         '''
-        Creates a new patch of grass
+        Creates a new patch
 
         Args:
             
@@ -27,14 +27,14 @@ class GrassPatch(Agent):
 
     def _is_any_neighbor_grown(self, species_count):
         """
-        checks if there is at least one neighbor grass which is grown.
+        checks if there is at least one neighbor patch which is grown.
         """        
         return True if sum(species_count) > 0 else False
     
 
     def _count_neighbors_by_species(self, neighbors, no_of_species):
         """
-        counts the number and the species identity of each grass around.
+        counts the number and the species identity of each patch around.
         
         returns:
             an array with the number of neighbors per species 
@@ -50,31 +50,31 @@ class GrassPatch(Agent):
         return species_count
         
     
-    def _become_grass(self):
+    def _become_patch(self):
         """
         become a species based on the species around
         """
         neighbors = self.model.grid.get_neighbors(self.pos, True)
-        species_count = self._count_neighbors_by_species(neighbors, GrassPatch.max_no_of_species)
+        species_count = self._count_neighbors_by_species(neighbors, Patch.max_no_of_species)
         
         if self._is_any_neighbor_grown(species_count):        
             total = sum(species_count)
             weighted_species_around = [i / total for i in species_count]    
             self.species = int(choice(
-                    range(GrassPatch.max_no_of_species), p=weighted_species_around))
+                    range(Patch.max_no_of_species), p=weighted_species_around))
             self.grown = True
-            #print("I just became grass")
+            #print("I just became a grown patch")
             
-    def become_grass(self):
+    def become_patch(self):
         """
-        public method to become grass to be called by the grass manager
+        public method to become patch to be called by the patch manager
         """
         if not self.grown:
-            self._become_grass()
+            self._become_patch()
             
     def is_grown(self):
         """
-        public method to respect encapsulation. returns whether grass is already
+        public method to respect encapsulation. returns whether patch is already
         grown or not
         """
         return self.grown
@@ -83,3 +83,5 @@ class GrassPatch(Agent):
 
     def step(self):
         pass
+    
+    

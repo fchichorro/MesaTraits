@@ -1,3 +1,3 @@
-from grass_dynamics.server import server
+from mesatraits.server import server
 
 server.launch()
