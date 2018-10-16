@@ -24,6 +24,7 @@ class Patch(Agent):
         
         
         
+        
 
     def _is_any_neighbor_grown(self, species_count):
         """
