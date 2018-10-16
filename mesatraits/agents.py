@@ -182,8 +182,11 @@ class Organism(Agent):
                 if any(type(neighbors)) == Organism:
                     pass
     
-    def subtract_metabolic_expenditures(self):
-        
+    def lose_energy(self):
+        """
+        loses energy based on the metabolic cost
+        """
+        self.current_energy = self.current_energy - self.metabolic_cost
         pass
     
     
@@ -193,7 +196,7 @@ class Organism(Agent):
             self._die()
         #try to die of old age
         die_of_old_age = self.age / self.max_longevity
-        if random() > die_of_old_age:
+        if random.random() < die_of_old_age:
             self._die()
 
 
@@ -207,12 +210,11 @@ class Organism(Agent):
         self.living = False
     
     
-    def age(self):
+    def get_older(self):
         """
         increases the age of the agent by 1
         """
         self.age += 1
-        pass
         
     def try_become_adult(self):
         """
@@ -233,5 +235,10 @@ class Organism(Agent):
         self.model.grid.move_agent(self, next_move)
     
     def step(self):
+        
         self.random_move()
+        
+        self.lose_energy()
+        self.get_older()
+        self.try_to_die()
         pass
