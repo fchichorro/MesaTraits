@@ -2,7 +2,7 @@ from mesa.visualization.ModularVisualization import ModularServer
 from mesa.visualization.modules import CanvasGrid, ChartModule
 from mesa.visualization.UserParam import UserSettableParameter
 
-from mesatraits.agents import Patch
+from mesatraits.agents import Patch, Organism
 from mesatraits.model import MesaTraitsModel
 
 def mesatraits_portrayal(agent):
@@ -28,7 +28,13 @@ def mesatraits_portrayal(agent):
         portrayal["Layer"] = 0
         portrayal["w"] = 1
         portrayal["h"] = 1
-
+    elif type(agent) is Organism:
+        portrayal["Color"] = ["#000000"]
+        portrayal["Shape"] = "circle"
+        portrayal["r"] = 0.5
+        portrayal["Filled"] = "true"
+        portrayal["Layer"] = 1
+        
     return portrayal 
 
 

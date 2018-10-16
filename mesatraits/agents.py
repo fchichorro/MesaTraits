@@ -3,8 +3,6 @@ from numpy.random import choice
 
 import random
 
-from mesatraits.random_walk import RandomWalker
-
 class Patch(Agent):
     '''
     A patch of habitat/resource/whatever
@@ -88,20 +86,17 @@ class Patch(Agent):
     
     
 
-class Organism(RandomWalker):
+class Organism(Agent):
     
-    def __init__(self, unique_id, pos, model, 
-                 
+    def __init__(self, unique_id, pos, model,                  
                  energy_tank,           #maximum amount of energy
                  current_energy,        #current energy
                  metabolic_cost,        #energy lost each round
                  energy_gain_per_patch, #energy gain each time agent feeds
-                 
+                 age,                   #age of the agent
                  sexual,                #boolean, sexual individual or not
-                 female,                #boolean, female or not
-                 age,                   #age of the agent (in ticks?)
                  maturity_age,          #age at which organism can reproduce
-                 longevity,             #maximum lifespan in ticks
+                 max_longevity,         #maximum lifespan in ticks
                  patch_affinity,        #list(4), for each habitat type, from 0 to 1
                  climatic_affinity,     #mean of climatic affinity
                  climatic_affinity_sd,  #SD of climatic affinity
@@ -112,15 +107,42 @@ class Organism(RandomWalker):
                  offspring_number,      #no of offsprings per reproductive event
                  moore = True):
         
-        super.__init__(unique_id, pos, model, moore)
+        """
+        Creates one organism.
+        atributes:
+            pos:                   the position on the grid
+            living:                whether the agent is living or not
+            energy_tank:           maximum amount of energy
+            current_energy:        current energy
+            metabolic_cost:        energy lost each round
+            energy_gain_per_patch: energy gain each time agent feeds
+            age:                   age of the agent
+            sexual:                boolean, sexual individual or not
+            female:                boolean, female or not
+            maturity_age:          age at which organism can reproduce
+            max_longevity:         maximum lifespan in ticks
+            patch_affinity:        list(4), for each habitat type, from 0 to 1
+            climatic_affinity:     mean of climatic affinity
+            climatic_affinity_sd:  SD of climatic affinity
+            line_of_sight:         range of organismal vision
+            dispersal_speed:       measure of how many steps agent can move 
+                                    when in search
+            reproductive_delay:    compulsory time between reproductive events
+            offspring_number:      no of offsprings per reproductive event
+            moore:                 diagonal movement or not
+        """
+        super().__init__(unique_id, model)
+        
+        self.pos = pos
         
         self.energy_tank = energy_tank
         self.current_energy = current_energy
         self.metabolic_cost = metabolic_cost
         self.sexual = sexual
-        self.female = random.choice([True, False]) if sexual else True
+        self.age = age
+
         self.maturity_age = maturity_age
-        self.longevity = longevity
+        self.max_longevity = max_longevity
         self.patch_affinity = patch_affinity
         self.climatic_affinity = climatic_affinity
         self.climatic_affinity_sd = climatic_affinity_sd
@@ -128,16 +150,21 @@ class Organism(RandomWalker):
         self.dispersal_speed = dispersal_speed
         self.reproductive_delay = reproductive_delay
         self.offspring_number = offspring_number
-        
-        #other variables
+        self.moore = moore
+
+        #other attributes whose values depend on other attributes' values
         self.reproductive_threshold = (2 * energy_tank ) / 3
         self.min_energy_after_reprod = energy_tank / 3
-    
-    
+        self.female = random.choice([True, False]) if sexual else True        
+        self.living = True
+        self.adult = True if age > maturity_age else False
+        
     def search_for_food(self):
+        
         pass
     
     def search_for_partner(self):
+        
         pass
     
     def try_feed(self):
@@ -145,22 +172,66 @@ class Organism(RandomWalker):
     
     def try_reproduce(self):
         if self.age > self.maturity_age:
-            neighbors = self.model.grid.get.neighbors(
-                    pos = self.pos, moore = True, include_center = False,
-                    radius = self.line_of_sight)
+            if self.sexual:
+                neighbors = self.model.grid.get.neighbors(
+                pos = self.pos, moore = True, include_center = False,
+                radius = self.line_of_sight)
+            
             
             for neighbor in neighbors:
                 if any(type(neighbors)) == Organism:
                     pass
     
-    def try_death(self):
+    def subtract_metabolic_expenditures(self):
+        
         pass
     
+    
+    def try_to_die(self):
+        #try to die of exhaustion
+        if self.current_energy < 0:
+            self._die()
+        #try to die of old age
+        die_of_old_age = self.age / self.max_longevity
+        if random() > die_of_old_age:
+            self._die()
+
+
+    def _die(self):
+        """
+        kills the agent, removing it from the grid and schedule and setting
+        the attribute self.living to False
+        """
+        self.model.grid._remove_agent(self.pos, self)
+        self.model.schedule.remove(self)
+        self.living = False
+    
+    
     def age(self):
+        """
+        increases the age of the agent by 1
+        """
+        self.age += 1
         pass
         
     def try_become_adult(self):
-        pass
+        """
+        if agent age is higher than maturity age it becomes adult
+        """
         
+                
+    def random_move(self):
+        '''
+        Step one cell in any allowable direction.
+        '''
+        # Pick the next cell from the cells in dispersal speed maximum.
+        next_moves = self.model.grid.get_neighborhood(
+                self.pos, self.moore, True,
+                radius = random.choice(range(self.dispersal_speed)))
+        next_move = random.choice(next_moves)
+        # Now move:
+        self.model.grid.move_agent(self, next_move)
+    
     def step(self):
+        self.random_move()
         pass
