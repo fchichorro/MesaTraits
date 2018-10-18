@@ -61,7 +61,7 @@ class MesaTraitsModel(Model):
             #print("new patch added")
             grown = False
 
-            patch = Patch(self.next_id(), (x, y), self, None, grown)
+            patch = Patch(self.next_id(), (x, y), self, 0.04, None, grown)
             self.grid.place_agent(patch, (x, y))
             self.schedule.add(patch)
             self.patch_manager.add_patch(patch)

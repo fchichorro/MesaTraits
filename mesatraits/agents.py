@@ -8,7 +8,8 @@ class Patch(Agent):
     A patch of habitat/resource/whatever
     '''
     max_no_of_species = 4
-    def __init__(self, unique_id, pos, model, species = None, grown = False):
+    def __init__(self, unique_id, pos, model, regrowth_probability, 
+                 species = None, grown = False):
         '''
         Creates a new patch
 
@@ -22,8 +23,21 @@ class Patch(Agent):
         self.pos = pos
         self.species = species
         
+        self.regrowth_probability = regrowth_probability
         
         
+    def be_eaten(self):
+        """
+        function to be called by the agent eating the patch
+        """
+        self.grown = False
+        
+    def regrow(self):
+        """
+        the patch attempts to regrow
+        """
+        if random.random() < self.regrowth_probability:
+            self.grown = True
         
 
     def _is_any_neighbor_grown(self, species_count):
@@ -83,6 +97,7 @@ class Patch(Agent):
 
 
     def step(self):
+        self.regrow()
         pass
     
     
@@ -139,6 +154,7 @@ class Organism(Agent):
         self.energy_tank = energy_tank
         self.current_energy = current_energy
         self.metabolic_cost = metabolic_cost
+        self.energy_gain_per_patch = energy_gain_per_patch
         self.sexual = sexual
         self.age = age
 
@@ -159,6 +175,11 @@ class Organism(Agent):
         self.female = random.choice([True, False]) if sexual else True        
         self.living = True
         self.adult = True if age > maturity_age else False
+       
+    def get_patch_here(self):
+        objects_here = self.model.grid.get_cell_list_contents(self.pos)
+        patch = [obj for obj in objects_here if type(obj) is Patch]
+        return patch[0]
         
     def search_for_food(self):
         
@@ -168,8 +189,20 @@ class Organism(Agent):
         
         pass
     
+    
+    
+    def eat(self):
+        patch_here = self.get_patch_here()
+        if patch_here.grown:
+            patch_here.be_eaten()
+            self.current_energy += self.energy_gain_per_patch
+        
+    
     def try_feed(self):
+        
         pass
+    
+    
     
     def try_reproduce(self):
         if self.age > self.maturity_age:
@@ -182,6 +215,41 @@ class Organism(Agent):
             for neighbor in neighbors:
                 if any(type(neighbors)) == Organism:
                     pass
+    
+    def create_descendance(self):
+        """
+        creates new descendance. Descendance inherits all traits from parent except
+        current energy.
+        """
+        
+        parent_current_energy = self.min_energy_after_reprod
+        energy_for_offspring = self.current_energy - self.min_energy_after_reprod
+        
+        newborn_current_energy = energy_for_offspring / self.offspring_number
+        
+        for i in range(self.offspring_number):
+            newborn = Organism(self.model.next_id(), self.pos, self.model,
+                          energy_tank = self.energy_tank,
+                          current_energy = newborn_current_energy,
+                          metabolic_cost = self.metabolic_cost,
+                          energy_gain_per_patch = self.energy_gain_per_patch,
+                          age = 0,
+                          sexual = self.sexual, 
+                          maturity_age = self.maturity_age,
+                          max_longevity = self.max_longevity,
+                          patch_affinity = self.patch_affinity,
+                          climatic_affinity = self.climatic_affinity,
+                          climatic_affinity_sd = self.climatic_affinity_sd,
+                          line_of_sight = self.line_of_sight,
+                          dispersal_speed = self.dispersal_speed,
+                          reproductive_delay = self.reproductive_delay,
+                          offspring_number = self.offspring_number,
+                          moore = True)
+            self.model.grid.place_agent(newborn, self.pos)
+            self.model.schedule.add(newborn)
+        #update parent energy    
+        self.current_energy = parent_current_energy
+        
     
     def lose_energy(self):
         """
@@ -238,7 +306,8 @@ class Organism(Agent):
     def step(self):
         
         self.random_move()
-        
+        self.eat()
+        self.create_descendance()
         self.lose_energy()
         self.get_older()
         self.try_to_die()
