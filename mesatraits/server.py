@@ -42,12 +42,14 @@ canvas_element = CanvasGrid(mesatraits_portrayal, 60, 60, 800, 800)
 
 #seeds_slider = UserSettableParameter('slider', "Percentage of patches occupied", )
 
+chart_element = ChartModule([{"Label": "Organism", "Color": "#AA0000"}], 
+                            data_collector_name="datacollector")
 
 model_params = {"no_of_species" : UserSettableParameter('slider', "Number of patch types", 2,1,4),
                 "no_of_seeds" : UserSettableParameter('slider', "Number of seeds", 3,1,1000)}                                     
 
 
 
-server = ModularServer(MesaTraitsModel, [canvas_element], "MesaTraits", model_params)
+server = ModularServer(MesaTraitsModel, [canvas_element, chart_element], "MesaTraits", model_params)
 server.port = 8521
 

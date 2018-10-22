@@ -51,14 +51,12 @@ class MesaTraitsModel(Model):
 
         self.schedule = RandomActivationByBreed(self)
         self.grid = MultiGrid(self.height, self.width, torus=True)
-        self.datacollector = None
         self.no_of_species = no_of_species
         self.no_of_seeds = no_of_seeds
         self.patch_manager = PatchManager()
         
-        #self.datacollector = DataCollector(         #soon to be implemented
-        #    {"Organisms": lambda m: m.schedule.get_breed_count(Wolf),
-        #     "Sheep": lambda m: m.schedule.get_breed_count(Sheep)})
+        self.datacollector = DataCollector(         #soon to be implemented
+            {"Organisms": lambda m: m.schedule.get_breed_count(Organism)})
 
         # Create patches
         for agent, x, y in self.grid.coord_iter():
@@ -117,6 +115,7 @@ class MesaTraitsModel(Model):
     def step(self):
         self.schedule.step()
         # collect data
+        self.datacollector.collect(self)
 
 
     def run_model(self, step_count=200):
