@@ -307,8 +307,8 @@ class Organism(Agent):
         
         self.random_move()
         self.eat()
-        self.create_descendance()
+        #self.create_descendance()
         self.lose_energy()
         self.get_older()
-        self.try_to_die()
+        #self.try_to_die()
         pass

@@ -46,5 +46,8 @@ canvas_element = CanvasGrid(mesatraits_portrayal, 60, 60, 800, 800)
 model_params = {"no_of_species" : UserSettableParameter('slider', "Number of patch types", 2,1,4),
                 "no_of_seeds" : UserSettableParameter('slider', "Number of seeds", 3,1,1000)}                                     
 
+
+
 server = ModularServer(MesaTraitsModel, [canvas_element], "MesaTraits", model_params)
 server.port = 8521
+

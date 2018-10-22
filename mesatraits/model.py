@@ -11,12 +11,13 @@ generating random maps.
 
 from mesa import Model
 from mesa.space import MultiGrid
-from mesa.time import RandomActivation
+from mesa.datacollection import DataCollector
 
 import random
 
 from mesatraits.agents import Patch, Organism
 from mesatraits.patch_manager import PatchManager
+from mesatraits.schedule import RandomActivationByBreed
 
 class MesaTraitsModel(Model):
     '''
@@ -48,13 +49,16 @@ class MesaTraitsModel(Model):
         self.no_of_agents = no_of_agents
 
 
-        self.schedule = RandomActivation(self)
+        self.schedule = RandomActivationByBreed(self)
         self.grid = MultiGrid(self.height, self.width, torus=True)
         self.datacollector = None
         self.no_of_species = no_of_species
         self.no_of_seeds = no_of_seeds
         self.patch_manager = PatchManager()
-
+        
+        #self.datacollector = DataCollector(         #soon to be implemented
+        #    {"Organisms": lambda m: m.schedule.get_breed_count(Wolf),
+        #     "Sheep": lambda m: m.schedule.get_breed_count(Sheep)})
 
         # Create patches
         for agent, x, y in self.grid.coord_iter():
@@ -95,15 +99,15 @@ class MesaTraitsModel(Model):
             agent = Organism(self.next_id(), (x,y), self,
                                           energy_tank = 100,
                                         current_energy = 50, metabolic_cost = 1,
-                                        energy_gain_per_patch = 10, age = 5,
+                                        energy_gain_per_patch = 5, age = 5,
                                         sexual = False, maturity_age = 20,
-                                        max_longevity = 150,
+                                        max_longevity = 1000,
                                         patch_affinity = [1,1,0,0],
                                         climatic_affinity = 0.6,
                                         climatic_affinity_sd = 0.05,
                                         line_of_sight = 1, dispersal_speed = 2,
                                         reproductive_delay = 0,
-                                        offspring_number = 3,
+                                        offspring_number = 1,
                                         moore = True)
             self.grid.place_agent(agent, (x, y))
             self.schedule.add(agent)
