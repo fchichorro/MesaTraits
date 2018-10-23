@@ -262,11 +262,14 @@ class Organism(Agent):
     def try_to_die(self):
         #try to die of exhaustion
         if self.current_energy < 0:
+            print("die of starvation")
             self._die()
         #try to die of old age
-        die_of_old_age = self.age / self.max_longevity
-        if random.random() < die_of_old_age:
-            self._die()
+        else:
+            die_of_old_age = self.age / self.max_longevity
+            if random.random() < die_of_old_age:
+                print("die of old age")
+                self._die()
 
 
     def _die(self):
@@ -274,9 +277,9 @@ class Organism(Agent):
         kills the agent, removing it from the grid and schedule and setting
         the attribute self.living to False
         """
-        self.model.grid._remove_agent(self.pos, self)
-        self.model.schedule.remove(self)
         self.living = False
+        self.model.grid.remove_agent(self)
+        self.model.schedule.remove(self)
     
     
     def get_older(self):
@@ -307,8 +310,9 @@ class Organism(Agent):
         
         self.random_move()
         self.eat()
-        #self.create_descendance()
+        if self.current_energy > self.min_energy_after_reprod:
+            self.create_descendance()
         self.lose_energy()
         self.get_older()
-        #self.try_to_die()
+        self.try_to_die()
         pass
