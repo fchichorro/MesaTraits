@@ -55,9 +55,8 @@ class MesaTraitsModel(Model):
         self.no_of_seeds = no_of_seeds
         self.patch_manager = PatchManager()
         
-        self.datacollector = DataCollector(         #soon to be implemented
-            {"Organisms": lambda m: m.schedule.get_breed_count(Organism)})
-
+        self.datacollector = DataCollector(
+                {"Organisms": lambda m: m.schedule.get_breed_count(Organism)})
         # Create patches
         for agent, x, y in self.grid.coord_iter():
             #print("new patch added")
@@ -111,6 +110,7 @@ class MesaTraitsModel(Model):
             self.schedule.add(agent)
         
         self.running = True
+        self.datacollector.collect(self)
 
     def step(self):
         self.schedule.step()
