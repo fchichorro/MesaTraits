@@ -1,3 +1,7 @@
-# An agent-based model developed in python using Mesa to simulate spatial-explicit competition for limited resources
+# Mesa Traits
+_An agent-based model developed in python using Mesa to simulate spatial-explicit competition for limited resources_
 
-We stopped the development of the model using Mesa/Python, because the same model written in Netlogo was faster to code and faster to run. Check it at: https://github.com/fchichorro/LogoTraits
+## Summary
+
+Model development discontinued in Python/Mesa and continued in Netlogo, due to increased coding and simulation speed.
+Check https://github.com/fchichorro/LogoTraits19
